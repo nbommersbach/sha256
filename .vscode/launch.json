@@ -64,7 +64,7 @@
       "program": "/Users/niklas/Documents/Niklas/Program/C/C++/Krypto/SHA256/build/Debug/outDebug",
       "internalConsoleOptions": "openOnSessionStart",
       "MIMode": "gdb",
-      "miDebuggerPath": "/usr/bin/lldb",
+      "miDebuggerPath": "gdb",
       "externalConsole": false
     }
   ]
