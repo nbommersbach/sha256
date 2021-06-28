@@ -14,12 +14,4 @@ std::vector<byte> to_ascii(std::string str)
     return vec;
 }
 
-template <typename T>
-void print_vec(std::vector<T> vec)
-{
-    for(const auto &val : vec)
-    {
-        std::cout << val << std::endl;
-    }
-    std::cout << std::endl;
-}
+
