@@ -4,15 +4,19 @@
 #include <string>
 #include <bitset>
 
-#include "Input.h"
+#include "Constants.h"
+#include "Preprocessing.h"
 
 std::string message;
 
 int main()
 {
     std::getline(std::cin, message);
-    std::vector<byte> result = to_ascii(message);
-    print_vec<byte>(result);
+    std::vector<byte> input_binary = to_ascii(message);           
+    message.clear();
+
+    message = padding_512bits(input_binary);
+    
 
     return 0;
 }
