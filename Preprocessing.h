@@ -10,6 +10,7 @@ using byte = std::bitset<8>;
 
 std::vector<byte> to_ascii(std::string str);
 std::string padding_512bits(std::vector<byte> &input_binary);
+std::vector<std::bitset<32>> blocking(std::string &message);
 
 template <typename T>
 void print_vec(std::vector<T> vec)
