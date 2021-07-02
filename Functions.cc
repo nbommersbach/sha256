@@ -79,7 +79,7 @@ std::string hex_return(unsigned long input)
     return sstream.str();    
 }
 
-std::string digest_block(std::vector<std::bitset<32>> &m)
+std::string sha256(std::string &message)
 {
     unsigned long h0 = 0x6a09e667;
     unsigned long h1 = 0xbb67ae85;
@@ -100,65 +100,68 @@ std::string digest_block(std::vector<std::bitset<32>> &m)
     0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
     0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2};
 
-    std::vector<unsigned long> w(64, 0);
-    unsigned long mod = static_cast<unsigned long>(std::pow(2, 32));
-
-    for(unsigned int t = 0; t < 16; ++t)
+    for(std::size_t block_count = 0; block_count < message.size()/512; ++block_count)
     {
-        w[t] = m[t].to_ulong();
-    }
-
-    for(unsigned int t = 16; t < 64; ++t)
-    {
-        unsigned long pre_w = ssig1(w[t-2]) + w[t-7] + ssig0(w[t-15]) + w[t-16];
         
-        pre_w = pre_w % mod;
-        w[t] = pre_w;
+        std::string blockmessage = message.substr(block_count * 512, block_count * 512 + 512);
+        std::vector<std::bitset<32>> block;
+
+        for(unsigned int i = 0; i < 16; ++i)
+        {
+            unsigned long lower = 32 * i;
+            block.push_back(std::bitset<32>(blockmessage.substr(lower, lower + 32)));
+        }
+
+        std::vector<unsigned long> w(64, 0);
+        unsigned long mod = static_cast<unsigned long>(std::pow(2, 32));
+
+        for(unsigned int t = 0; t < 16; ++t)
+        {
+            w[t] = block[t].to_ulong();
+        }
+
+        for(unsigned int t = 16; t < 64; ++t)
+        {
+            unsigned long pre_w = ssig1(w[t-2]) + w[t-7] + ssig0(w[t-15]) + w[t-16];
+            
+            pre_w = pre_w % mod;
+            w[t] = pre_w;
+        }
+
+        unsigned long a = h0;
+        unsigned long b = h1;
+        unsigned long c = h2;
+        unsigned long d = h3;
+        unsigned long e = h4;
+        unsigned long f = h5;
+        unsigned long g = h6;
+        unsigned long h = h7;
+        unsigned long t1;
+        unsigned long t2;
+
+        for(int t = 0; t < 64; ++t)
+        {
+            t1 = (h + bsig1(e) + ch(e, f, g) + k[t] + w[t]) % mod;
+            t2 = (bsig0(a) + maj(a, b, c)) % mod;
+            h = g;
+            g = f;
+            f = e;
+            e = (d + t1) % mod;
+            d = c;
+            c = b;
+            b = a;
+            a = (t1 + t2) % mod;
+        }
+
+        h0 = h0 + a % mod;
+        h1 = h1 + b % mod;
+        h2 = h2 + c % mod;
+        h3 = h3 + d % mod; 
+        h4 = h4 + e % mod;
+        h5 = h5 + f % mod;
+        h6 = h6 + g % mod;
+        h7 = h7 + h % mod;    
     }
-
-    unsigned long a = h0;
-    unsigned long b = h1;
-    unsigned long c = h2;
-    unsigned long d = h3;
-    unsigned long e = h4;
-    unsigned long f = h5;
-    unsigned long g = h6;
-    unsigned long h = h7;
-    unsigned long t1;
-    unsigned long t2;
-
-    for(int t = 0; t < 64; ++t)
-    {
-        t1 = (h + bsig1(e) + ch(e, f, g) + k[t] + w[t]) % mod;
-        t2 = (bsig0(a) + maj(a, b, c)) % mod;
-        h = g;
-        g = f;
-        f = e;
-        e = (d + t1) % mod;
-        d = c;
-        c = b;
-        b = a;
-        a = (t1 + t2) % mod;
-    }
-
-    h0 = h0 + a % mod;
-    h1 = h1 + b % mod;
-    h2 = h2 + c % mod;
-    h3 = h3 + d % mod; 
-    h4 = h4 + e % mod;
-    h5 = h5 + f % mod;
-    h6 = h6 + g % mod;
-    h7 = h7 + h % mod;    
-
-    std::cout << hex_return(h0) << std::endl;
-    std::cout << hex_return(h1) << std::endl;
-    std::cout << hex_return(h2) << std::endl;
-    std::cout << hex_return(h3) << std::endl;
-    std::cout << hex_return(h4) << std::endl;
-    std::cout << hex_return(h5) << std::endl;
-    std::cout << hex_return(h6) << std::endl;
-    std::cout << hex_return(h7) << std::endl;
-
 
     return hex_return(h0) + hex_return(h1) + hex_return(h2) + hex_return(h3) +
            hex_return(h4) + hex_return(h5) + hex_return(h6) + hex_return(h7);

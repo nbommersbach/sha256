@@ -43,17 +43,3 @@ std::string padding_512bits(std::vector<byte> &input_binary)
 
     return message;
 }
-
-std::vector<std::bitset<32>> blocking(std::string &message)
-{
-    std::vector<std::bitset<32>> result;
-    message = message.substr(0, 512);
-
-    for(unsigned int i = 0; i < 16; ++i)
-    {
-        unsigned long lower = 32 * i;
-        result.push_back(std::bitset<32>(message.substr(lower, lower + 32)));
-    }
-
-    return result;
-}

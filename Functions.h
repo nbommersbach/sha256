@@ -18,4 +18,4 @@ unsigned long ssig0(unsigned long xl);
 unsigned long ssig1(unsigned long xl);
 
 std::string hex_return(unsigned long input);
-std::string digest_block(std::vector<std::bitset<32>> &m);
+std::string sha256(std::string &message);
